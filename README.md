@@ -65,7 +65,7 @@ Keeps the code **reusable**, **clean**, and **environment-agnostic** without har
 Controls Datadog’s runtime behavior inside the AKS cluster.
 
 **What it does**
-- Uses Datadog **EU site (datadoghq.eu)** for GDPR compliance
+- Uses Datadog **EU site (`datadoghq.eu`)** for GDPR compliance
 - Enables:
   - Log collection
   - APM (Application Performance Monitoring)
@@ -81,66 +81,18 @@ Separates **observability policy** from Terraform logic and ensures **privacy, c
 
 ---
 
-### 📄 .gitignore — Security & Safety Guard
+## 🔐 Datadog API Key Configuration
 
-**Purpose**  
-Prevents sensitive or local-only files from being committed to GitHub.
+The Datadog API key is required to authenticate the Datadog Agent with Datadog.
 
-**What it ignores**
-- Terraform state files
-- Terraform variable files (`terraform.tfvars`)
-- `.terraform/` directory
-
-**Why it’s needed**  
-Terraform state can contain sensitive infrastructure metadata and must **never** be pushed to version control.
+⚠️ **For security reasons, the API key is NOT stored in the repository or code.**
 
 ---
 
-### 📄 .terraform.lock.hcl — Provider Version Locking
+### ✅ Export Datadog API Key (Required)
 
-**Purpose**  
-Locks exact versions of Terraform providers.
+Before running Terraform, export the Datadog API key as an environment variable:
 
-**What it does**
-- Ensures consistent deployments across machines
-- Prevents unexpected breaking changes from provider upgrades
+```bash
+export TF_VAR_datadog_api_key="YOUR_DATADOG_API_KEY"
 
-**Why it’s needed**  
-Improves **stability and reproducibility** of infrastructure deployments.
-
----
-
-## 🚫 Files Intentionally Not Committed
-
-| File | Reason |
-|------|--------|
-| terraform.tfstate | Contains sensitive infrastructure state |
-| terraform.tfvars | May contain secrets |
-| .terraform/ | Local provider cache |
-
-These files are excluded following **security best practices**.
-
----
-
-## 🔄 High-Level Workflow
-
-1. **provider.tf**  
-   → Connects Terraform to Azure, AKS, and Helm  
-
-2. **variables.tf**  
-   → Supplies environment-specific values  
-
-3. **datadog-values.yaml**  
-   → Defines Datadog logging, APM, and security policies  
-
-4. **main.tf**  
-   → Deploys Datadog to the AKS cluster  
-
-5. **.gitignore**  
-   → Protects secrets and Terraform state files  
-
----
-
-## ✅ Summary
-
-This repository provides a **secure, GDPR-compliant, and cost-optimized Datadog deployment on AKS** using Terraform and Helm, with a **clear separation between infrastructure logic and observability policies**.
