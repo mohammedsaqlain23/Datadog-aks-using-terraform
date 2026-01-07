@@ -10,16 +10,6 @@ variables:
 steps:
   - checkout: self
 
-  # Install Terraform manually (on your self-hosted agent)
-  - bash: |
-      sudo apt-get update
-      sudo apt-get install -y wget unzip
-      wget https://releases.hashicorp.com/terraform/1.6.6/terraform_1.6.6_linux_amd64.zip
-      unzip terraform_1.6.6_linux_amd64.zip
-      sudo mv terraform /usr/local/bin/
-      terraform version
-    displayName: Install Terraform
-
   # Azure Login using Service Connection
   - task: AzureCLI@2
     displayName: Azure Login
@@ -31,13 +21,11 @@ steps:
         az account show
 
   # Terraform Init
-  - bash: |
-      terraform init
+  - bash: terraform init
     displayName: Terraform Init
 
   # Terraform Plan
-  - bash: |
-      terraform plan
+  - bash: terraform plan
     displayName: Terraform Plan
     env:
       TF_VAR_aks_name: $(AKS_CLUSTER_NAME)
@@ -45,11 +33,9 @@ steps:
       TF_VAR_datadog_api_key: $(DATADOG_API_KEY)
 
   # Terraform Apply
-  - bash: |
-      terraform apply -auto-approve
+  - bash: terraform apply -auto-approve
     displayName: Terraform Apply
     env:
       TF_VAR_aks_name: $(AKS_CLUSTER_NAME)
       TF_VAR_resource_group: $(AKS_RESOURCE_GROUP)
       TF_VAR_datadog_api_key: $(DATADOG_API_KEY)
-
