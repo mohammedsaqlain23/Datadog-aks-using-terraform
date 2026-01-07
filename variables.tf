@@ -2,7 +2,7 @@
 # AKS CLUSTER NAME
 ############################################
 
-variable "aks_name" {
+variable "aks_cluster_name" {
   description = "Name of the AKS cluster"
   type        = string
 }
@@ -11,7 +11,7 @@ variable "aks_name" {
 # AKS RESOURCE GROUP
 ############################################
 
-variable "resource_group" {
+variable "aks_resource_group" {
   description = "Resource group of the AKS cluster"
   type        = string
 }
@@ -21,7 +21,7 @@ variable "resource_group" {
 ############################################
 
 variable "env" {
-  description = "Environment name (dev/stage/prod)"
+  description = "Environment name (dev / stage / prod)"
   type        = string
 }
 
