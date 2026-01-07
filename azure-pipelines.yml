@@ -4,47 +4,50 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-# 🔐 Variable Group from Library
 variables:
   - group: datadog-aks-vars
 
 steps:
   - checkout: self
 
-  # Install Terraform
-  - task: TerraformInstaller@1
+  # Install Terraform manually
+  - bash: |
+      sudo apt-get update
+      sudo apt-get install -y wget unzip
+      wget https://releases.hashicorp.com/terraform/1.6.6/terraform_1.6.6_linux_amd64.zip
+      unzip terraform_1.6.6_linux_amd64.zip
+      sudo mv terraform /usr/local/bin/
+      terraform version
     displayName: Install Terraform
+
+  # Azure Login using Service Connection
+  - task: AzureCLI@2
+    displayName: Azure Login
     inputs:
-      terraformVersion: '1.6.6'
+      azureSubscription: azure-connection
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        az account show
 
   # Terraform Init
-  - task: TerraformTaskV4@4
+  - bash: |
+      terraform init
     displayName: Terraform Init
-    inputs:
-      provider: azurerm
-      command: init
-      environmentServiceNameAzureRM: azure-connection
 
   # Terraform Plan
-  - task: TerraformTaskV4@4
+  - bash: |
+      terraform plan
     displayName: Terraform Plan
-    inputs:
-      provider: azurerm
-      command: plan
-      environmentServiceNameAzureRM: azure-connection
     env:
       TF_VAR_aks_name: $(AKS_CLUSTER_NAME)
       TF_VAR_resource_group: $(AKS_RESOURCE_GROUP)
       TF_VAR_datadog_api_key: $(DATADOG_API_KEY)
 
   # Terraform Apply
-  - task: TerraformTaskV4@4
+  - bash: |
+      terraform apply -auto-approve
     displayName: Terraform Apply
-    inputs:
-      provider: azurerm
-      command: apply
-      environmentServiceNameAzureRM: azure-connection
-      args: "-auto-approve"
     env:
       TF_VAR_aks_name: $(AKS_CLUSTER_NAME)
       TF_VAR_resource_group: $(AKS_RESOURCE_GROUP)
