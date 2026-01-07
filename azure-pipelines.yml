@@ -2,7 +2,7 @@ trigger:
   - main
 
 pool:
-  vmImage: ubuntu-latest
+  name: self-hosted-linux
 
 variables:
   - group: datadog-aks-vars
@@ -10,7 +10,7 @@ variables:
 steps:
   - checkout: self
 
-  # Install Terraform manually
+  # Install Terraform manually (on your self-hosted agent)
   - bash: |
       sudo apt-get update
       sudo apt-get install -y wget unzip
