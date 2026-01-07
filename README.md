@@ -1,80 +1,97 @@
-## 📂 File Explanation & Repository Structure
+## 📂 Repository Structure & File Explanation
 
-This repository deploys **Datadog on Azure Kubernetes Service (AKS)** in a **secure, GDPR-compliant, and production-ready** way using **Terraform and Helm**.  
-The **clear responsibility** for each file is described below.
+This repository uses **Terraform and Helm** to deploy **Datadog on Azure Kubernetes Service (AKS)** in a **secure, GDPR-compliant, and production-ready** manner.
+Each file has a **clear responsibility**, explained below.
 
 ---
 
-### 📄 Provider & Connectivity Configuration at provider.tf
+### 📄 provider.tf — Provider & Connectivity Configuration
 
-The goal is to specify and set up the Terraform providers needed for this project.
+**Purpose**
+Defines and configures the Terraform providers required for this project.
 
-What it accomplishes
-Terraform is connected to Azure (azurerm), Kubernetes (kubernetes), Helm (helm), and the AKS cluster for authentication.
-Helm can now install Datadog inside of Kubernetes.
+**What it does**
+- Connects Terraform to:
+  - Azure (azurerm)
+  - Kubernetes (kubernetes)
+  - Helm (helm)
+- Authenticates Terraform with the AKS cluster
+- Enables Helm to install Datadog inside Kubernetes
 
-**Why it’s needed**  
+**Why it’s needed**
 Without this file, Terraform would not know **where** or **how** to deploy resources.
 
 ---
 
-### 📄 Core Deployment Logic in main.tf
+### 📄 main.tf — Core Deployment Logic
 
-It contains the primary logic for the infrastructure.
+**Purpose**
+Contains the main infrastructure logic.
 
-What it performs
-- Uses the Helm chart to deploy Datadog; - Creates a Kubernetes Secret for the Datadog API key
-Installing:
-  - Datadog Operator (if enabled) - Datadog Cluster Agent - Datadog Agent (DaemonSet)
-Utilising the configuration found in `datadog-values.yaml`
+**What it does**
+- Creates a Kubernetes Secret for the Datadog API key
+- Deploys Datadog using the Helm chart
+- Installs:
+  - Datadog Agent (DaemonSet)
+  - Datadog Cluster Agent
+  - Datadog Operator (if enabled)
+- Applies configuration from `datadog-values.yaml`
 
-Why it's essential  
-In the AKS cluster, this file outlines **what gets deployed** and **how Datadog is installed**.
-
-### variables.tf — Definitions of Input Variables
-
-**Purpose** outlines every input variable that the Terraform configuration uses.
-
-What it accomplishes
-Variables like the AKS cluster name are declared.
-  The name of the resource group
-  The development, staging, and production environments
-  The securely transmitted Datadog API key
-
-It is necessary because it keeps the code **clean**, **reusable**, and **environment-agnostic** without hardcoding values.
+**Why it’s needed**
+This file defines **what gets deployed** and **how Datadog is installed** in the AKS cluster.
 
 ---
 
-### 📄 Datadog Configuration & Policies – datadog-values.yaml
+### 📄 variables.tf — Input Variable Definitions
 
-**Goal** Manages Datadog's behaviour during runtime within the AKS cluster.
+**Purpose**
+Defines all input variables used by the Terraform configuration.
 
-What it accomplishes
-Datadog **EU site (`datadoghq.eu`)** is used for GDPR compliance.
-It permits:
-  Log gathering
-  Application Performance Monitoring, or APM
-Logs are dropped at the agent level:
-  Logs of information (cost optimisation)
-  Kubernetes health checks
-  Tokens, authorisation headers, and emails (PII protection)
-Permits:
-  The Datadog UI will display WARN, ERROR, and CRITICAL logs.
+**What it does**
+- Declares variables such as:
+  - AKS cluster name
+  - Resource group name
+  - Environment (dev, staging, prod)
+  - Datadog API key (passed securely)
 
-**Why it's necessary** It guarantees **privacy, compliance, and cost control** and keeps **observability policy** apart from Terraform logic.
----
-
-## Configuring Datadog API Keys
-
-To authenticate the Datadog Agent with Datadog, the Datadog API key is needed.
-
-⚠️ The API key is not kept in the repository or code for security reasons.
+**Why it’s needed**
+Keeps the code **reusable**, **clean**, and **environment-agnostic** without hardcoding values.
 
 ---
 
-### ✅ Export Datadog API Key (Needed)
+### 📄 datadog-values.yaml — Datadog Configuration & Policies
 
-Export the Datadog API key as an environment variable prior to executing Terraform:
+**Purpose**
+Controls Datadog’s runtime behavior inside the AKS cluster.
 
-```bash export TF_VAR_datadog_api_key="YOUR_DATADOG_API_KEY"
+**What it does**
+- Uses Datadog **EU site (`datadoghq.eu`)** for GDPR compliance
+- Enables:
+  - Log collection
+  - APM (Application Performance Monitoring)
+- Drops logs at agent level:
+  - INFO logs (cost optimization)
+  - Kubernetes health checks
+  - Emails, tokens, authorization headers (PII protection)
+- Allows:
+  - WARN, ERROR, and CRITICAL logs to appear in Datadog UI
 
+**Why it’s needed**
+Separates **observability policy** from Terraform logic and ensures **privacy, compliance, and cost control**.
+
+---
+
+## 🔐 Datadog API Key Configuration
+
+The Datadog API key is required to authenticate the Datadog Agent with Datadog.
+
+⚠️ **For security reasons, the API key is NOT stored in the repository or code.**
+
+---
+
+### ✅ Export Datadog API Key (Required)
+
+Before running Terraform, export the Datadog API key as an environment variable:
+
+```bash
+export TF_VAR_datadog_api_key="YOUR_DATADOG_API_KEY"
