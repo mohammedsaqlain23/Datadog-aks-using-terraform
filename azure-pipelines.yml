@@ -26,13 +26,14 @@ steps:
   displayName: Terraform Plan
   env:
     TF_VAR_aks_cluster_name: $(AKS_CLUSTER_NAME)
-    TF_VAR_resource_group: $(AKS_RESOURCE_GROUP)
+    TF_VAR_aks_resource_group: $(AKS_RESOURCE_GROUP)
+    TF_VAR_env: $(ENV)
     TF_VAR_datadog_api_key: $(DATADOG_API_KEY)
 
 - script: terraform apply -input=false -auto-approve
   displayName: Terraform Apply
   env:
     TF_VAR_aks_cluster_name: $(AKS_CLUSTER_NAME)
-    TF_VAR_resource_group: $(AKS_RESOURCE_GROUP)
+    TF_VAR_aks_resource_group: $(AKS_RESOURCE_GROUP)
+    TF_VAR_env: $(ENV)
     TF_VAR_datadog_api_key: $(DATADOG_API_KEY)
-
