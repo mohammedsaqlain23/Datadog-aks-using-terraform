@@ -3,8 +3,8 @@
 ############################################
 
 data "azurerm_kubernetes_cluster" "aks" {
-  name                = var.aks_name
-  resource_group_name = var.resource_group
+  name                = var.aks_cluster_name
+  resource_group_name = var.aks_resource_group
 }
 
 ############################################
@@ -48,7 +48,7 @@ resource "kubernetes_namespace" "datadog" {
 resource "kubernetes_secret" "datadog" {
   metadata {
     name      = "datadog-secret"
-    namespace = "datadog"
+    namespace = kubernetes_namespace.datadog.metadata[0].name
   }
 
   data = {
@@ -76,7 +76,7 @@ resource "helm_release" "datadog" {
 
   set {
     name  = "datadog.clusterName"
-    value = var.aks_name
+    value = var.aks_cluster_name
   }
 
   depends_on = [
