@@ -1,46 +1,52 @@
 trigger:
-- main
+  - main
 
 pool:
   vmImage: ubuntu-latest
 
+# 🔐 Variable Group from Library
 variables:
-- group: aks-dev
+  - group: datadog-aks-vars
 
 steps:
-- checkout: self
+  - checkout: self
 
-- task: TerraformInstaller@1
-  inputs:
-    terraformVersion: '1.6.6'
+  # Install Terraform
+  - task: TerraformInstaller@1
+    displayName: Install Terraform
+    inputs:
+      terraformVersion: '1.6.6'
 
-- task: TerraformTaskV4@4
-  displayName: Terraform Init
-  inputs:
-    provider: azurerm
-    command: init
-    environmentServiceNameAzureRM: azure-connection
+  # Terraform Init
+  - task: TerraformTaskV4@4
+    displayName: Terraform Init
+    inputs:
+      provider: azurerm
+      command: init
+      environmentServiceNameAzureRM: azure-connection
 
-- task: TerraformTaskV4@4
-  displayName: Terraform Plan
-  inputs:
-    provider: azurerm
-    command: plan
-    environmentServiceNameAzureRM: azure-connection
-  env:
-    TF_VAR_aks_cluster_name: $(AKS_CLUSTER_NAME)
-    TF_VAR_aks_resource_group: $(AKS_RESOURCE_GROUP)
-    TF_VAR_datadog_api_key: $(DATADOG_API_KEY)
+  # Terraform Plan
+  - task: TerraformTaskV4@4
+    displayName: Terraform Plan
+    inputs:
+      provider: azurerm
+      command: plan
+      environmentServiceNameAzureRM: azure-connection
+    env:
+      TF_VAR_aks_name: $(AKS_CLUSTER_NAME)
+      TF_VAR_resource_group: $(AKS_RESOURCE_GROUP)
+      TF_VAR_datadog_api_key: $(DATADOG_API_KEY)
 
-- task: TerraformTaskV4@4
-  displayName: Terraform Apply
-  inputs:
-    provider: azurerm
-    command: apply
-    environmentServiceNameAzureRM: azure-connection
-    args: "-auto-approve"
-  env:
-    TF_VAR_aks_cluster_name: $(AKS_CLUSTER_NAME)
-    TF_VAR_aks_resource_group: $(AKS_RESOURCE_GROUP)
-    TF_VAR_datadog_api_key: $(DATADOG_API_KEY)
+  # Terraform Apply
+  - task: TerraformTaskV4@4
+    displayName: Terraform Apply
+    inputs:
+      provider: azurerm
+      command: apply
+      environmentServiceNameAzureRM: azure-connection
+      args: "-auto-approve"
+    env:
+      TF_VAR_aks_name: $(AKS_CLUSTER_NAME)
+      TF_VAR_resource_group: $(AKS_RESOURCE_GROUP)
+      TF_VAR_datadog_api_key: $(DATADOG_API_KEY)
 
